@@ -22,6 +22,9 @@ public class NumberOperationPanel extends JPanel{
     public NumberOperationPanel(int _width, int _height){
         x = 160;
         y = 250;
+
+        // This for loop ensures that the buttons arrangement similar to real calculators.
+        // i.e. The top row is 47, 8, 9, ÷
         for(int i = 0, num = 7; i < 13; i++){
             if(num == 10 && i == 3){
                 buttons.add(new JButton("÷"));
@@ -38,11 +41,15 @@ public class NumberOperationPanel extends JPanel{
             }
         }
 
+        //Adds the remaining symbols 
         buttons.add(new JButton("."));
         buttons.add(new JButton("="));
         buttons.add(new JButton("+"));
 
+        // Add all the buttons to the panel
         buttons.forEach((button) -> this.add(button));
+
+        //Does the work of setting up the panels appearance
         this.setLayout(new GridLayout(4, 4));
         this.setBounds(x, y, 200, 200);
         this.setBackground(Color.black);
