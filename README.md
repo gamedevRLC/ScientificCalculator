@@ -1,2 +1,2 @@
-# ScientificCalculator
-This java project uses Java Swing to make a fully functional Scientific calcular.
+# Scientific Calculator
+This java project uses Java Swing to make a fully functional Scientific calcular. That includes being able to do trigonometric functions, using degrees and radians, and various other things. As I make pushes to the code, I will add changes to the README file to reflect those changes.
