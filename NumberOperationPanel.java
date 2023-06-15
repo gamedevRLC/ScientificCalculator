@@ -12,6 +12,8 @@ public class NumberOperationPanel extends JPanel{
     // The location of this panel on the window
     private int x;
     private int y;
+    private int width;
+    private int height;
 
     // A list for all the buttons on the panel
     List<JButton> buttons = new ArrayList<JButton>();
@@ -19,9 +21,11 @@ public class NumberOperationPanel extends JPanel{
     //The border for the panel
     LineBorder lineBorder = new LineBorder(Color.white, 3);
 
-    public NumberOperationPanel(int _width, int _height){
+    public NumberOperationPanel(){
         x = 160;
         y = 250;
+        width = 200;
+        height = 200;
 
         // This for loop ensures that the buttons arrangement similar to real calculators.
         // i.e. The top row is 47, 8, 9, ÷
@@ -51,7 +55,7 @@ public class NumberOperationPanel extends JPanel{
 
         //Does the work of setting up the panels appearance
         this.setLayout(new GridLayout(4, 4));
-        this.setBounds(x, y, 200, 200);
+        this.setBounds(x, y, width, height);
         this.setBackground(Color.black);
         this.setOpaque(true);
         this.setBorder(lineBorder);
