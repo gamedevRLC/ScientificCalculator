@@ -7,6 +7,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class CalculatorPanel extends JPanel implements ActionListener{
 
@@ -19,6 +21,8 @@ public class CalculatorPanel extends JPanel implements ActionListener{
 
     // The text of the textfield will need to be continuously added to overtime, so this StringBuilder will help with that
     StringBuilder stringBuilder;
+
+    private String calculation;
 
     // The panel for the numbers and arithmetic operations
     NumberOperationPanel numOpPanel;
@@ -71,12 +75,46 @@ public class CalculatorPanel extends JPanel implements ActionListener{
 
         //If the "=" button was pressed, clear the string in the outputfield
         if(button.getText().equals("=")){
+            calculation = stringBuilder.toString();
             stringBuilder.delete(0, stringBuilder.length());
+            stringBuilder.append(result(calculation));
         } else { // else, append the character of the button that was pressed
             stringBuilder.append(button.getText());
         }
 
         // Change the text to the string builder's new text
         outputField.setText(stringBuilder.toString());
+    }
+
+    // This method does the work of parsing the numbers and operations from the calculation
+    public String result(String _calculation){
+        // Use the regular expression to parse information from the calculation string
+        Pattern pattern = Pattern.compile("[\\+-]|÷|•");
+        Matcher matcher = pattern.matcher(_calculation);
+
+        // See which operation is in the calculation
+        String operation = "";
+        if (matcher.find()) {
+            operation = matcher.group();
+        }
+
+        // Split the calculation where the operation is into two parts to get the numbers
+        String[] numbers = pattern.split(_calculation);
+        int num1 = Integer.parseInt(numbers[0]), num2 = Integer.parseInt(numbers[1]);
+
+        // Do the operation with the numbers and return the result at the end
+        int result = 0;
+        switch(operation){
+            case "+": result = num1 + num2;
+            break;
+            case "•": result = num1 * num2;
+            break;
+            case "-": result = num1 - num2;
+            break;
+            case "÷": result = num1 / num2;
+            break;
+            default: System.exit(0);
+        }
+        return result+"";
     }
 }
