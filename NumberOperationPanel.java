@@ -9,6 +9,9 @@ import javax.swing.border.LineBorder;
 
 public class NumberOperationPanel extends JPanel{
     
+    // The calculator panel needs to be able to listen to the buttons on the number/operation panel
+    private CalculatorPanel calculatorPanel;
+
     // The location of this panel on the window
     private int x;
     private int y;
@@ -21,11 +24,12 @@ public class NumberOperationPanel extends JPanel{
     //The border for the panel
     LineBorder lineBorder = new LineBorder(Color.white, 3);
 
-    public NumberOperationPanel(){
+    public NumberOperationPanel(CalculatorPanel _calculatorPanel){
         x = 160;
         y = 250;
         width = 200;
         height = 200;
+        calculatorPanel = _calculatorPanel;
 
         // This for loop ensures that the buttons arrangement similar to real calculators.
         // i.e. The top row is 47, 8, 9, ÷
@@ -51,7 +55,10 @@ public class NumberOperationPanel extends JPanel{
         buttons.add(new JButton("+"));
 
         // Add all the buttons to the panel
-        buttons.forEach((button) -> this.add(button));
+        buttons.forEach((button) -> {
+            this.add(button);
+            button.addActionListener(calculatorPanel);
+        });
 
         //Does the work of setting up the panels appearance
         this.setLayout(new GridLayout(4, 4));
