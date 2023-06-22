@@ -2,11 +2,11 @@ import java.awt.Color;
 import java.awt.Point;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.JButton;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -18,6 +18,9 @@ public class CalculatorPanel extends JPanel implements ActionListener{
 
     // The textfield for the output of the calculator when entering calculations and getting an answer
     JTextField outputField;
+
+    // Stacks for the numbers and operations in the calculation
+    Stack<String> numStack, opStack;
 
     // The text of the textfield will need to be continuously added to overtime, so this StringBuilder will help with that
     StringBuilder stringBuilder;
@@ -35,6 +38,8 @@ public class CalculatorPanel extends JPanel implements ActionListener{
         height = _height;
         stringBuilder = new StringBuilder();
         numOpPanel = new NumberOperationPanel(this);
+        numStack = new Stack<String>();
+        opStack = new Stack<String>();
 
         // Setting up the outputField
         outputField = new JTextField();
@@ -70,51 +75,54 @@ public class CalculatorPanel extends JPanel implements ActionListener{
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        // Get the source of the ActionEvent and convert it into a JButton
-        JButton button = (JButton) e.getSource();
+        // Get the source of the ActionEvent and convert it into a CalculatorButton
+        CalculatorButton button = (CalculatorButton) e.getSource();
 
         //If the "=" button was pressed, clear the string in the outputfield
         if(button.getText().equals("=")){
-            calculation = stringBuilder.toString();
             stringBuilder.delete(0, stringBuilder.length());
-            stringBuilder.append(result(calculation));
-        } else { // else, append the character of the button that was pressed
+            stringBuilder.append(calculate());
+        } else { // else add the button's text to the textfield
             stringBuilder.append(button.getText());
+        }
+        
+        // if a number was pressed, add it to the number stack
+        if (button.getType().equals(Button.NUMBER)) { 
+            numStack.push(button.getText());
+        } else if (button.getType().equals(Button.OPERATION) && !button.getText().equals("=")) {
+            // else if an operation was pressed, add it to the operation stack
+            opStack.push(button.getText());
         }
 
         // Change the text to the string builder's new text
         outputField.setText(stringBuilder.toString());
     }
 
-    // This method does the work of parsing the numbers and operations from the calculation
-    public String result(String _calculation){
-        // Use the regular expression to parse information from the calculation string
-        Pattern pattern = Pattern.compile("[\\+-]|÷|•");
-        Matcher matcher = pattern.matcher(_calculation);
+    // This method does the work of taking the numbers and operations in the stacks and doing the math
+    public String calculate(){
+        
+        // while the operations stack isn't empty
+        while(!opStack.empty()){
 
-        // See which operation is in the calculation
-        String operation = "";
-        if (matcher.find()) {
-            operation = matcher.group();
+            // Pop off the next two numbers and the operation
+            int num1 = Integer.parseInt(numStack.pop());
+            int num2 = Integer.parseInt(numStack.pop());
+            String operation = opStack.pop();
+
+            // Do the operation on the two numbers and push that onto the stack
+            switch(operation){
+                case "+": numStack.push((num1 + num2) + "");
+                break;
+                case "-": numStack.push((num2 - num1) + "");
+                break;
+                case "•": numStack.push((num1 * num2) + "");
+                break;
+                case "÷": numStack.push((num2 / num1) + "");
+                break;
+            }
         }
 
-        // Split the calculation where the operation is into two parts to get the numbers
-        String[] numbers = pattern.split(_calculation);
-        int num1 = Integer.parseInt(numbers[0]), num2 = Integer.parseInt(numbers[1]);
-
-        // Do the operation with the numbers and return the result at the end
-        int result = 0;
-        switch(operation){
-            case "+": result = num1 + num2;
-            break;
-            case "•": result = num1 * num2;
-            break;
-            case "-": result = num1 - num2;
-            break;
-            case "÷": result = num1 / num2;
-            break;
-            default: System.exit(0);
-        }
-        return result+"";
+        // the remaining number will be the final result of the calculation
+        return numStack.peek();
     }
 }

@@ -2,10 +2,14 @@ import javax.swing.JButton;
 
 public class CalculatorButton extends JButton {
     
-    Button type;
+    // A CalculatorButton has a type
+    private Button type;
 
     public CalculatorButton(String text, String button){
+        // Give the text to the super class' constructor
         super(text);
+
+        // Assign the type based on the second parameter
         switch(button){
             case "number": type = Button.NUMBER;
             break;
@@ -14,6 +18,7 @@ public class CalculatorButton extends JButton {
         }
     }
 
+    // Return the type
     public Button getType(){
         return type;
     }
