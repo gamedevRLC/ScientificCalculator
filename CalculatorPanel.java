@@ -1,14 +1,12 @@
 import java.awt.Color;
-import java.awt.Point;
+// import java.awt.Point;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
+// import java.awt.event.MouseEvent;
+// import java.awt.event.MouseMotionAdapter;
 import java.util.Stack;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class CalculatorPanel extends JPanel implements ActionListener{
 
@@ -67,27 +65,38 @@ public class CalculatorPanel extends JPanel implements ActionListener{
     }
 
     // This inner class will be used to drag components on the screen.
-    private class DragListener extends MouseMotionAdapter {
+    // private class DragListener extends MouseMotionAdapter {
 
-        // When dragging the mouse use the point as the location for whatever component it moves
-        public void mouseDragged(MouseEvent e){
-            Point currentPoint = e.getPoint();
-            outputField.setBounds((int)currentPoint.getX(), (int)currentPoint.getY(), 100, 50);
-            System.out.println("Location: " + (int)currentPoint.getX() + ", " + (int)currentPoint.getY());
-            repaint();
-        }
-    }
+    //     // When dragging the mouse use the point as the location for whatever component it moves
+    //     public void mouseDragged(MouseEvent e){
+    //         Point currentPoint = e.getPoint();
+    //         outputField.setBounds((int)currentPoint.getX(), (int)currentPoint.getY(), 100, 50);
+    //         System.out.println("Location: " + (int)currentPoint.getX() + ", " + (int)currentPoint.getY());
+    //         repaint();
+    //     }
+    // }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         // Get the source of the ActionEvent and convert it into a CalculatorButton
         CalculatorButton button = (CalculatorButton) e.getSource();
 
-        //If the "=" button was pressed, clear the string in the outputfield, and push the current operand into the number stack
+        // If there's nothing in the operand string and the operation stack is empty
+        if(operand.isEmpty() && opStack.isEmpty()){
+            // Clear the string displayed in the text field
+            stringBuilder.delete(0, stringBuilder.length());
+        }
+
+        //If the "=" button was pressed
         if(button.getText().equals("=")){
+            // push the current operand into the number stack
             numStack.push(Integer.parseInt(operand.toString()));
+            operand.delete(0, operand.length());
+
+            // clear the textfield and display the calculation
             stringBuilder.delete(0, stringBuilder.length());
             stringBuilder.append(calculate());
+
         } else { // else add the button's text to the textfield
             stringBuilder.append(button.getText());
         }
