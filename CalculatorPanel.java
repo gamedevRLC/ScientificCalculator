@@ -19,13 +19,17 @@ public class CalculatorPanel extends JPanel implements ActionListener{
     // The textfield for the output of the calculator when entering calculations and getting an answer
     JTextField outputField;
 
-    // Stacks for the numbers and operations in the calculation
-    Stack<String> numStack, opStack;
+    // Stacks for the operations in the calculation
+    Stack<String> opStack;
+
+    // Stacks for the numbers in the calculation
+    Stack<Integer> numStack;
 
     // The text of the textfield will need to be continuously added to overtime, so this StringBuilder will help with that
     StringBuilder stringBuilder;
 
-    private String calculation;
+    // The text of an operand typed in before the next operation button
+    StringBuilder operand;
 
     // The panel for the numbers and arithmetic operations
     NumberOperationPanel numOpPanel;
@@ -37,8 +41,9 @@ public class CalculatorPanel extends JPanel implements ActionListener{
         width = _width;
         height = _height;
         stringBuilder = new StringBuilder();
+        operand = new StringBuilder();
         numOpPanel = new NumberOperationPanel(this);
-        numStack = new Stack<String>();
+        numStack = new Stack<Integer>();
         opStack = new Stack<String>();
 
         // Setting up the outputField
@@ -78,8 +83,9 @@ public class CalculatorPanel extends JPanel implements ActionListener{
         // Get the source of the ActionEvent and convert it into a CalculatorButton
         CalculatorButton button = (CalculatorButton) e.getSource();
 
-        //If the "=" button was pressed, clear the string in the outputfield
+        //If the "=" button was pressed, clear the string in the outputfield, and push the current operand into the number stack
         if(button.getText().equals("=")){
+            numStack.push(Integer.parseInt(operand.toString()));
             stringBuilder.delete(0, stringBuilder.length());
             stringBuilder.append(calculate());
         } else { // else add the button's text to the textfield
@@ -88,10 +94,14 @@ public class CalculatorPanel extends JPanel implements ActionListener{
         
         // if a number was pressed, add it to the number stack
         if (button.getType().equals(Button.NUMBER)) { 
-            numStack.push(button.getText());
+            operand.append(button.getText());
         } else if (button.getType().equals(Button.OPERATION) && !button.getText().equals("=")) {
             // else if an operation was pressed, add it to the operation stack
             opStack.push(button.getText());
+
+            // push the current operand into the number stack and reset the operand
+            numStack.push(Integer.parseInt(operand.toString()));
+            operand.delete(0, operand.length());
         }
 
         // Change the text to the string builder's new text
@@ -105,24 +115,24 @@ public class CalculatorPanel extends JPanel implements ActionListener{
         while(!opStack.empty()){
 
             // Pop off the next two numbers and the operation
-            int num1 = Integer.parseInt(numStack.pop());
-            int num2 = Integer.parseInt(numStack.pop());
+            int num1 = numStack.pop();
+            int num2 = numStack.pop();
             String operation = opStack.pop();
 
             // Do the operation on the two numbers and push that onto the stack
             switch(operation){
-                case "+": numStack.push((num1 + num2) + "");
+                case "+": numStack.push((num1 + num2));
                 break;
-                case "-": numStack.push((num2 - num1) + "");
+                case "-": numStack.push((num2 - num1));
                 break;
-                case "•": numStack.push((num1 * num2) + "");
+                case "•": numStack.push((num1 * num2));
                 break;
-                case "÷": numStack.push((num2 / num1) + "");
+                case "÷": numStack.push((num2 / num1));
                 break;
             }
         }
 
         // the remaining number will be the final result of the calculation
-        return numStack.peek();
+        return numStack.peek() + "";
     }
 }
