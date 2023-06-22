@@ -1,0 +1,3 @@
+enum Button{
+    NUMBER, OPERATION;
+}

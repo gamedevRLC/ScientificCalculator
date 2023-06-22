@@ -19,7 +19,7 @@ public class NumberOperationPanel extends JPanel{
     private int height;
 
     // A list for all the buttons on the panel
-    List<JButton> buttons = new ArrayList<JButton>();
+    List<CalculatorButton> buttons = new ArrayList<CalculatorButton>();
     
     //The border for the panel
     LineBorder lineBorder = new LineBorder(Color.white, 3);
@@ -35,24 +35,24 @@ public class NumberOperationPanel extends JPanel{
         // i.e. The top row is 47, 8, 9, ÷
         for(int i = 0, num = 7; i < 13; i++){
             if(num == 10 && i == 3){
-                buttons.add(new JButton("÷"));
+                buttons.add(new CalculatorButton("÷", "operation"));
                 num = 4;
             } else if (num == 7 && i == 7) {
-                buttons.add(new JButton("•"));
+                buttons.add(new CalculatorButton("•", "operation"));
                 num = 1;
             } else if (num == 4 && i == 11) {
-                buttons.add(new JButton("-"));
+                buttons.add(new CalculatorButton("-", "operation"));
                 num = 0;
             } else {
-                buttons.add(new JButton(num + ""));
+                buttons.add(new CalculatorButton(num + "", "number"));
                 num++;
             }
         }
 
         //Adds the remaining symbols 
-        buttons.add(new JButton("."));
-        buttons.add(new JButton("="));
-        buttons.add(new JButton("+"));
+        buttons.add(new CalculatorButton(".", "operation"));
+        buttons.add(new CalculatorButton("=", "operation"));
+        buttons.add(new CalculatorButton("+", "operation"));
 
         // Add all the buttons to the panel
         buttons.forEach((button) -> {
