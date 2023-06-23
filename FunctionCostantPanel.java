@@ -31,23 +31,23 @@ public class FunctionCostantPanel extends JPanel{
 
         //Adds the symbols for various functions
         buttons.add(new CalculatorButton("a\u00B2", "operation"));
-        buttons.add(new CalculatorButton("a\u1D47", "operation"));
-        buttons.add(new CalculatorButton("|a|", "operation"));
-        buttons.add(new CalculatorButton("\u221A", "operation"));
-        buttons.add(new CalculatorButton("\u00B3\u221A", "operation"));
-        buttons.add(new CalculatorButton("\u207F\u221A", "operation"));
-        buttons.add(new CalculatorButton("sin", "operation"));
-        buttons.add(new CalculatorButton("cos", "operation"));
-        buttons.add(new CalculatorButton("tan", "operation"));
-        buttons.add(new CalculatorButton("sin\u207B\u00B9", "operation"));
-        buttons.add(new CalculatorButton("cos\u207B\u00B9", "operation"));
-        buttons.add(new CalculatorButton("tan\u207B\u00B9", "operation"));
-        buttons.add(new CalculatorButton("\u03C0", "operation"));
-        buttons.add(new CalculatorButton("e", "operation"));
-        buttons.add(new CalculatorButton("e\u02E3", "operation"));
-        buttons.add(new CalculatorButton("log", "operation"));
-        buttons.add(new CalculatorButton("ln", "operation"));
-        buttons.add(new CalculatorButton("!", "operation"));
+        buttons.add(new CalculatorButton("a\u1D47", "function"));
+        buttons.add(new CalculatorButton("|a|", "function"));
+        buttons.add(new CalculatorButton("\u221A", "function"));
+        buttons.add(new CalculatorButton("\u00B3\u221A", "function"));
+        buttons.add(new CalculatorButton("\u207F\u221A", "function"));
+        buttons.add(new CalculatorButton("sin", "function"));
+        buttons.add(new CalculatorButton("cos", "function"));
+        buttons.add(new CalculatorButton("tan", "function"));
+        buttons.add(new CalculatorButton("sin\u207B\u00B9", "function"));
+        buttons.add(new CalculatorButton("cos\u207B\u00B9", "function"));
+        buttons.add(new CalculatorButton("tan\u207B\u00B9", "function"));
+        buttons.add(new CalculatorButton("\u03C0", "function"));
+        buttons.add(new CalculatorButton("e", "function"));
+        buttons.add(new CalculatorButton("e\u02E3", "function"));
+        buttons.add(new CalculatorButton("log", "function"));
+        buttons.add(new CalculatorButton("ln", "function"));
+        buttons.add(new CalculatorButton("!", "function"));
         
         // // Add all the buttons to the panel
         buttons.forEach((button) -> {

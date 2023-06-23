@@ -91,51 +91,81 @@ public class CalculatorPanel extends JPanel implements ActionListener{
             stringBuilder.delete(0, stringBuilder.length());
         }
 
+        
         //If the "=" button was pressed
         if(button.getText().equals("=")){
             // push the current operand into the number stack
-            numStack.push(Integer.parseInt(operand.toString()));
+            if(!operand.toString().equals("")){
+                numStack.push(Integer.parseInt(operand.toString()));
+            }
             operand.delete(0, operand.length());
-
+            
             // clear the textfield and display the calculation
             stringBuilder.delete(0, stringBuilder.length());
             stringBuilder.append(calculate());
-        } else { // else add the button's text to the textfield
+        } else if (button.getType().equals(Button.NUMBER)) { // else if the button is a number
+            // append it to the string
             stringBuilder.append(button.getText());
-        }
+        } else { // else add the button's text to the textfield
         
+            switch(button.getText()){
+                case "+":
+                case "-":
+                case "•":
+                case "÷": stringBuilder.append(button.getText());
+                break;
+                case "a\u00B2": stringBuilder.append("\u00B2");
+                break;
+            }
+        }
+    
         // if a number was pressed
         if (button.getType().equals(Button.NUMBER)) { 
             // add it to the number stack
             operand.append(button.getText());
-        } else if (button.getType().equals(Button.OPERATION) && !button.getText().equals("=")) { // else if a symbol button besides = was pressed
-            // push the operand onto the stack
-            numStack.push(Integer.parseInt(operand.toString()));
-
+        } else if (button.getType().equals(Button.OPERATION) && 
+        !button.getText().equals("=")) { // else if a symbol button besides = was pressed
+            
+            // push the operand onto the stack if it exists
+            if(!operand.toString().equals("")){
+                numStack.push(Integer.parseInt(operand.toString()));
+            }
+            
             // while there are operation in the stack and the current operation doesn't have the most precedence
             while(!opStack.empty() && getPrecedence(button.getText()) <= getPrecedence(opStack.peek())){
-
+                
                 // Pop off the numbers and operation from their respective stacks
                 int num1 = numStack.pop();
-                int num2 = numStack.pop();
                 String operation = opStack.pop();
-
+                
                 //Do the operation and push the result onto the number stack
-                int result = doOperation(num1, num2, operation);
+                int result = 0;
+                switch(operation){
+                    case "+":
+                    case "-":
+                    case "•":
+                    case "÷":
+                        int num2 = numStack.pop();
+                        result = doOperation(num1, num2, operation);
+                    break;
+                    case "a\u00B2":
+                        result = doOperation(num1, num1, operation);
+                    break;
+                }
                 numStack.push(result);
             }
             
             // add the operation stack to the operation stack
             opStack.push(button.getText());
-
             // reset the operand
             operand.delete(0, operand.length());
         }
-
+    
         // Change the text to the string builder's new text
         outputField.setText(stringBuilder.toString());
     }
 
+    // Return the precedence of an operation
     private int getPrecedence(String operation){
         int precedence = 0;
         switch(operation){
@@ -144,6 +174,8 @@ public class CalculatorPanel extends JPanel implements ActionListener{
             break;
             case "•":
             case "÷": precedence = 1;
+            break;
+            case "a\u00B2": precedence = 2;
             break;
         }
         return precedence;
@@ -158,6 +190,7 @@ public class CalculatorPanel extends JPanel implements ActionListener{
             break;
             case "-": result = num2 - num1;
             break;
+            case "a\u00B2":
             case "•": result = num1 * num2;
             break;
             case "÷": result = num2 / num1;
@@ -173,22 +206,25 @@ public class CalculatorPanel extends JPanel implements ActionListener{
         // while the operations stack isn't empty
         while(!opStack.empty()){
 
-            // Pop off the next two numbers and the operation
+            // Pop off the numbers and operation from their respective stacks
             int num1 = numStack.pop();
-            int num2 = numStack.pop();
             String operation = opStack.pop();
-
-            // Do the operation on the two numbers and push that onto the stack
+                
+            // Do the operation and push the result onto the number stack
+            int result = 0;
             switch(operation){
-                case "+": numStack.push((num1 + num2));
+                case "+":
+                case "-":
+                case "•":
+                case "÷":
+                    int num2 = numStack.pop();
+                    result = doOperation(num1, num2, operation);
                 break;
-                case "-": numStack.push((num2 - num1));
-                break;
-                case "•": numStack.push((num1 * num2));
-                break;
-                case "÷": numStack.push((num2 / num1));
+                case "a\u00B2":
+                    result = doOperation(num1, num1, operation);
                 break;
             }
+            numStack.push(result);
         }
 
         // the remaining number will be the final result of the calculation
