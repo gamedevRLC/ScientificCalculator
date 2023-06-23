@@ -32,6 +32,8 @@ public class CalculatorPanel extends JPanel implements ActionListener{
     // The panel for the numbers and arithmetic operations
     NumberOperationPanel numOpPanel;
 
+    FunctionCostantPanel funcCostPanel;
+
     // Use this to drag and drop components on the screen when designing the panel
     // DragListener dragListener = new DragListener();
 
@@ -41,12 +43,13 @@ public class CalculatorPanel extends JPanel implements ActionListener{
         stringBuilder = new StringBuilder();
         operand = new StringBuilder();
         numOpPanel = new NumberOperationPanel(this);
+        funcCostPanel = new FunctionCostantPanel(this);
         numStack = new Stack<Integer>();
         opStack = new Stack<String>();
 
         // Setting up the outputField
         outputField = new JTextField();
-        outputField.setBounds(160, 170, 200, 50);
+        outputField.setBounds(50, 170, 500, 50);
         outputField.setOpaque(true);
         outputField.setBackground(Color.gray);
         outputField.setHorizontalAlignment(JTextField.TRAILING);
@@ -58,6 +61,7 @@ public class CalculatorPanel extends JPanel implements ActionListener{
         this.setBackground(Color.black);
         this.setOpaque(true);
         this.add(numOpPanel);
+        this.add(funcCostPanel);
         this.add(outputField);
         this.setVisible(true);
 

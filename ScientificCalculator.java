@@ -3,8 +3,8 @@ import javax.swing.JFrame;
 public class ScientificCalculator{
 
     // Defining the dimensions of the window
-    private final int WIDTH = 500;
-    private final int HEIGHT = 500;
+    private final int WIDTH = 600;
+    private final int HEIGHT = 600;
 
     // The window for the program
     JFrame frame = new JFrame("Scientific Calculator");

@@ -23,7 +23,7 @@ public class NumberOperationPanel extends JPanel{
     LineBorder lineBorder = new LineBorder(Color.white, 3);
 
     public NumberOperationPanel(CalculatorPanel _calculatorPanel){
-        x = 160;
+        x = 200;
         y = 250;
         width = 200;
         height = 200;
