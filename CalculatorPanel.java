@@ -1,11 +1,11 @@
 import java.awt.Color;
-// import java.awt.Point;
+import java.awt.Point;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-// import java.awt.event.MouseEvent;
-// import java.awt.event.MouseMotionAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.util.Stack;
 
 public class CalculatorPanel extends JPanel implements ActionListener{
@@ -32,10 +32,14 @@ public class CalculatorPanel extends JPanel implements ActionListener{
     // The panel for the numbers and arithmetic operations
     NumberOperationPanel numOpPanel;
 
+    // The panel for math functions and constants
     FunctionCostantPanel funcCostPanel;
 
+    // The panel for misc. buttons
+    MiscPanel miscPanel;
+
     // Use this to drag and drop components on the screen when designing the panel
-    // DragListener dragListener = new DragListener();
+    DragListener dragListener = new DragListener();
 
     public CalculatorPanel(int _width, int _height){
         width = _width;
@@ -44,6 +48,7 @@ public class CalculatorPanel extends JPanel implements ActionListener{
         operand = new StringBuilder();
         numOpPanel = new NumberOperationPanel(this);
         funcCostPanel = new FunctionCostantPanel(this);
+        miscPanel = new MiscPanel(this);
         numStack = new Stack<Integer>();
         opStack = new Stack<String>();
 
@@ -63,22 +68,23 @@ public class CalculatorPanel extends JPanel implements ActionListener{
         this.add(numOpPanel);
         this.add(funcCostPanel);
         this.add(outputField);
+        this.add(miscPanel);
         this.setVisible(true);
 
-        // this.addMouseMotionListener(dragListener);
+        this.addMouseMotionListener(dragListener);
     }
 
     // This inner class will be used to drag components on the screen.
-    // private class DragListener extends MouseMotionAdapter {
+    private class DragListener extends MouseMotionAdapter {
 
-    //     // When dragging the mouse use the point as the location for whatever component it moves
-    //     public void mouseDragged(MouseEvent e){
-    //         Point currentPoint = e.getPoint();
-    //         outputField.setBounds((int)currentPoint.getX(), (int)currentPoint.getY(), 100, 50);
-    //         System.out.println("Location: " + (int)currentPoint.getX() + ", " + (int)currentPoint.getY());
-    //         repaint();
-    //     }
-    // }
+        // When dragging the mouse use the point as the location for whatever component it moves
+        public void mouseDragged(MouseEvent e){
+            Point currentPoint = e.getPoint();
+            miscPanel.setBounds((int)currentPoint.getX(), (int)currentPoint.getY(), miscPanel.getWidth(), miscPanel.getHeight());
+            System.out.println("Location: " + (int)currentPoint.getX() + ", " + (int)currentPoint.getY());
+            repaint();
+        }
+    }
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -112,7 +118,9 @@ public class CalculatorPanel extends JPanel implements ActionListener{
                 case "+":
                 case "-":
                 case "•":
-                case "÷": stringBuilder.append(button.getText());
+                case "÷": 
+                case "(":
+                case ")": stringBuilder.append(button.getText());
                 break;
                 case "a\u00B2": stringBuilder.append("\u00B2");
                 break;
