@@ -20,13 +20,10 @@ public class CalculatorPanel extends JPanel implements ActionListener{
     JTextField outputField;
 
     // Stacks for the operations in the calculation
-    Stack<String> opStack;
+    Deque<String> opStack;
 
     // Stack for the numbers in the calculation
-    Stack<Integer> numStack;
-
-    // Stack for the numbers in parenthesis
-    Stack<Integer> parNumStack;
+    Deque<Integer> numStack;
 
     // The text of the textfield will need to be continuously added to overtime, so this StringBuilder will help with that
     StringBuilder stringBuilder;
@@ -54,8 +51,8 @@ public class CalculatorPanel extends JPanel implements ActionListener{
         numOpPanel = new NumberOperationPanel(this);
         funcCostPanel = new FunctionCostantPanel(this);
         miscPanel = new MiscPanel(this);
-        numStack = new Stack<Integer>();
-        opStack = new Stack<String>();
+        numStack = new LinkedList<Integer>();
+        opStack = new LinkedList<String>();
 
         // Setting up the outputField
         outputField = new JTextField();
@@ -254,9 +251,9 @@ public class CalculatorPanel extends JPanel implements ActionListener{
         opStack.pop();
     }
 
-    private void PEMDASHandler(String op, Stack<String> ops, Stack<Integer> nums){
+    private void PEMDASHandler(String op, Deque<String> ops, Deque<Integer> nums){
         // while there are operation in the stack and the current operation doesn't have the most precedence
-        while(!ops.empty() && getPrecedence(op) < getPrecedence(ops.peek())){
+        while(!ops.isEmpty() && getPrecedence(op) < getPrecedence(ops.peek())){
             // Pop off the numbers and operation from their respective stacks
             String operation = ops.pop();
             
@@ -319,38 +316,38 @@ public class CalculatorPanel extends JPanel implements ActionListener{
         return operands.pop() + "";
     }
 
-    // This method does the work of taking the numbers and operations in the stacks and doing the math
-    public String calculate(Stack<String> ops, Stack<Integer> operands){
+    // // This method does the work of taking the numbers and operations in the stacks and doing the math
+    // public String calculate(Stack<String> ops, Stack<Integer> operands){
         
-        // while the operations stack isn't empty
-        while(!ops.empty()){
+    //     // while the operations stack isn't empty
+    //     while(!ops.empty()){
 
-            // Pop off the numbers and operation from their respective stacks
-            String operation = ops.pop();
+    //         // Pop off the numbers and operation from their respective stacks
+    //         String operation = ops.pop();
             
-            // Do the operation and push the result onto the number stack
-            int result = 0;
-            switch(operation){
-                case "+":
-                case "-":
-                case "•":
-                case "÷":
-                    int num1 = operands.pop();
-                    int num2 = operands.pop();
-                    result = doOperation(num1, num2, operation);
-                    operands.push(result);
-                break;
-                case "a\u00B2":
-                    int num = operands.pop();
-                    result = doOperation(num, num, operation);
-                    operands.push(result);
-                break;
-                case ")":
-                break;
-            }
-        }
+    //         // Do the operation and push the result onto the number stack
+    //         int result = 0;
+    //         switch(operation){
+    //             case "+":
+    //             case "-":
+    //             case "•":
+    //             case "÷":
+    //                 int num1 = operands.pop();
+    //                 int num2 = operands.pop();
+    //                 result = doOperation(num1, num2, operation);
+    //                 operands.push(result);
+    //             break;
+    //             case "a\u00B2":
+    //                 int num = operands.pop();
+    //                 result = doOperation(num, num, operation);
+    //                 operands.push(result);
+    //             break;
+    //             case ")":
+    //             break;
+    //         }
+    //     }
 
-        // the remaining number will be the final result of the calculation
-        return operands.pop() + "";
-    }
+    //     // the remaining number will be the final result of the calculation
+    //     return operands.pop() + "";
+    // }
 }
