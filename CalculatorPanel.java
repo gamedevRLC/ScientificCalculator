@@ -1,11 +1,13 @@
 import java.awt.Color;
-import java.awt.Point;
+// import java.awt.Point;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
+import java.util.Deque;
+import java.util.LinkedList;
+// import java.awt.event.MouseEvent;
+// import java.awt.event.MouseMotionAdapter;
 import java.util.Stack;
 
 public class CalculatorPanel extends JPanel implements ActionListener{
@@ -20,8 +22,14 @@ public class CalculatorPanel extends JPanel implements ActionListener{
     // Stacks for the operations in the calculation
     Stack<String> opStack;
 
-    // Stacks for the numbers in the calculation
+    // Stack for the numbers in the calculation
     Stack<Integer> numStack;
+
+    // Stack for the numbers in parenthesis
+    Stack<Integer> parNumStack;
+
+    // A stack for doing expressions within parenthesis
+    Stack<String> parenthesisStack;
 
     // The text of the textfield will need to be continuously added to overtime, so this StringBuilder will help with that
     StringBuilder stringBuilder;
@@ -39,7 +47,7 @@ public class CalculatorPanel extends JPanel implements ActionListener{
     MiscPanel miscPanel;
 
     // Use this to drag and drop components on the screen when designing the panel
-    DragListener dragListener = new DragListener();
+    // DragListener dragListener = new DragListener();
 
     public CalculatorPanel(int _width, int _height){
         width = _width;
@@ -51,6 +59,7 @@ public class CalculatorPanel extends JPanel implements ActionListener{
         miscPanel = new MiscPanel(this);
         numStack = new Stack<Integer>();
         opStack = new Stack<String>();
+        parenthesisStack = new Stack<String>();
 
         // Setting up the outputField
         outputField = new JTextField();
@@ -71,20 +80,20 @@ public class CalculatorPanel extends JPanel implements ActionListener{
         this.add(miscPanel);
         this.setVisible(true);
 
-        this.addMouseMotionListener(dragListener);
+        // this.addMouseMotionListener(dragListener);
     }
 
     // This inner class will be used to drag components on the screen.
-    private class DragListener extends MouseMotionAdapter {
+    // private class DragListener extends MouseMotionAdapter {
 
-        // When dragging the mouse use the point as the location for whatever component it moves
-        public void mouseDragged(MouseEvent e){
-            Point currentPoint = e.getPoint();
-            miscPanel.setBounds((int)currentPoint.getX(), (int)currentPoint.getY(), miscPanel.getWidth(), miscPanel.getHeight());
-            System.out.println("Location: " + (int)currentPoint.getX() + ", " + (int)currentPoint.getY());
-            repaint();
-        }
-    }
+    //     // When dragging the mouse use the point as the location for whatever component it moves
+    //     public void mouseDragged(MouseEvent e){
+    //         Point currentPoint = e.getPoint();
+    //         miscPanel.setBounds((int)currentPoint.getX(), (int)currentPoint.getY(), miscPanel.getWidth(), miscPanel.getHeight());
+    //         System.out.println("Location: " + (int)currentPoint.getX() + ", " + (int)currentPoint.getY());
+    //         repaint();
+    //     }
+    // }
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -92,82 +101,26 @@ public class CalculatorPanel extends JPanel implements ActionListener{
         CalculatorButton button = (CalculatorButton) e.getSource();
 
         // If there's nothing in the operand string and the operation stack is empty
-        if(operand.isEmpty() && opStack.isEmpty()){
+        if(operand.isEmpty() && opStack.isEmpty() && parenthesisStack.isEmpty() && numStack.isEmpty()){
             // Clear the string displayed in the text field
             stringBuilder.delete(0, stringBuilder.length());
         }
 
-        
         //If the "=" button was pressed
-        if(button.getText().equals("=")){
+        if(button.getType().equals(Button.EQUALS)){
             // push the current operand into the number stack
             if(!operand.toString().equals("")){
                 numStack.push(Integer.parseInt(operand.toString()));
+                operand.delete(0, operand.length());
             }
-            operand.delete(0, operand.length());
             
             // clear the textfield and display the calculation
             stringBuilder.delete(0, stringBuilder.length());
-            stringBuilder.append(calculate());
-        } else if (button.getType().equals(Button.NUMBER)) { // else if the button is a number
-            // append it to the string
-            stringBuilder.append(button.getText());
-        } else { // else add the button's text to the textfield
+            stringBuilder.append(calculate(opStack, numStack));
+        } 
         
-            switch(button.getText()){
-                case "+":
-                case "-":
-                case "•":
-                case "÷": 
-                case "(":
-                case ")": stringBuilder.append(button.getText());
-                break;
-                case "a\u00B2": stringBuilder.append("\u00B2");
-                break;
-            }
-        }
-    
-        // if a number was pressed
-        if (button.getType().equals(Button.NUMBER)) { 
-            // add it to the number stack
-            operand.append(button.getText());
-        } else if (button.getType().equals(Button.OPERATION) && 
-        !button.getText().equals("=")) { // else if a symbol button besides = was pressed
-            
-            // push the operand onto the stack if it exists
-            if(!operand.toString().equals("")){
-                numStack.push(Integer.parseInt(operand.toString()));
-            }
-            
-            // while there are operation in the stack and the current operation doesn't have the most precedence
-            while(!opStack.empty() && getPrecedence(button.getText()) <= getPrecedence(opStack.peek())){
-                
-                // Pop off the numbers and operation from their respective stacks
-                int num1 = numStack.pop();
-                String operation = opStack.pop();
-                
-                //Do the operation and push the result onto the number stack
-                int result = 0;
-                switch(operation){
-                    case "+":
-                    case "-":
-                    case "•":
-                    case "÷":
-                        int num2 = numStack.pop();
-                        result = doOperation(num1, num2, operation);
-                    break;
-                    case "a\u00B2":
-                        result = doOperation(num1, num1, operation);
-                    break;
-                }
-                numStack.push(result);
-            }
-            
-            // add the operation stack to the operation stack
-            opStack.push(button.getText());
-            // reset the operand
-            operand.delete(0, operand.length());
-        }
+        appendText(button);
+        handleButtonTypes(button);
     
         // Change the text to the string builder's new text
         outputField.setText(stringBuilder.toString());
@@ -184,6 +137,9 @@ public class CalculatorPanel extends JPanel implements ActionListener{
             case "÷": precedence = 1;
             break;
             case "a\u00B2": precedence = 2;
+            break;
+            case "(":
+            case ")": precedence = 3;
             break;
         }
         return precedence;
@@ -208,16 +164,98 @@ public class CalculatorPanel extends JPanel implements ActionListener{
         return result;
     }
 
-    // This method does the work of taking the numbers and operations in the stacks and doing the math
-    public String calculate(){
-        
-        // while the operations stack isn't empty
-        while(!opStack.empty()){
 
+    private void appendText(CalculatorButton button){
+        // if the button is a number
+        if (button.getType().equals(Button.NUMBER)) { 
+            // append it to the string
+            stringBuilder.append(button.getText());
+        } else { // else add the button's text to the textfield
+        
+            switch(button.getText()){
+                case "+":
+                case "-":
+                case "•":
+                case "÷": stringBuilder.append(button.getText());
+                break;
+                case "(": 
+                case ")": stringBuilder.append(button.getText());
+                break;
+                case "a\u00B2": stringBuilder.append("\u00B2");
+                break;
+            }
+        }
+    }
+
+    private void handleButtonTypes(CalculatorButton button){
+        // if a number was pressed
+        if (button.getType().equals(Button.NUMBER)) { 
+            // add it to the number stack
+            operand.append(button.getText());
+        } else if (button.getType().equals(Button.OPERATION)) { // else if a symbol button besides = was pressed
+            operationButtons(button);
+        } else if (button.getType().equals(Button.PARENTHESIS)) { // else if a parenthesis is pressed
+            // Push it to the opStack
+            opStack.push(button.getText());
+
+            // If ) was pressed
+            if(button.getText().equals(")")){
+                // Add the current operand if it exists and do the entire expression
+                if(!operand.toString().equals("")){
+                    numStack.push(Integer.parseInt(operand.toString()));
+                }
+                doParenthesis();
+            }
+        }
+    }
+
+    private void operationButtons(CalculatorButton button){
+        // push the operand onto the stack if it exists
+        if(!operand.toString().equals("")){
+            numStack.push(Integer.parseInt(operand.toString()));
+        }
+        
+        // Take care of the order of operations
+        PEMDASHandler(button.getText(), opStack, numStack);
+
+        // add the operation stack to the operation stack
+        opStack.push(button.getText());
+        // reset the operand
+        operand.delete(0, operand.length());
+    }
+
+    // This class takes care of calculating expressions within parenthesis
+    private void doParenthesis(){
+        // These deques are for the operations and operands respectively
+        Deque<String> operations = new LinkedList<String>();
+        Deque<Integer> operands = new LinkedList<Integer>();
+
+        // Get all the operands and operations just after the corresponding (
+        while(!opStack.peek().equals("(")){
+            operations.add(opStack.pop());
+        }
+
+        for (int i = 0; i < operations.size() && !numStack.isEmpty(); i++) {
+            operands.add(numStack.pop());
+        }
+
+        // clear the operand string
+        operand.delete(0, operand.length());
+
+        // calculate the full expression from the parenthesis group
+        String result = calculate(operations, operands);
+
+        // Push the result to the number stack and pop the ( from the opStack
+        numStack.push(Integer.parseInt(result));
+        opStack.pop();
+    }
+
+    private void PEMDASHandler(String op, Stack<String> ops, Stack<Integer> nums){
+        // while there are operation in the stack and the current operation doesn't have the most precedence
+        while(!ops.empty() && getPrecedence(op) < getPrecedence(ops.peek())){
             // Pop off the numbers and operation from their respective stacks
-            int num1 = numStack.pop();
-            String operation = opStack.pop();
-                
+            String operation = ops.pop();
+            
             // Do the operation and push the result onto the number stack
             int result = 0;
             switch(operation){
@@ -225,17 +263,90 @@ public class CalculatorPanel extends JPanel implements ActionListener{
                 case "-":
                 case "•":
                 case "÷":
-                    int num2 = numStack.pop();
+                    int num1 = nums.pop();
+                    int num2 = nums.pop();
                     result = doOperation(num1, num2, operation);
+                    nums.push(result);
                 break;
                 case "a\u00B2":
-                    result = doOperation(num1, num1, operation);
+                int num = nums.pop();
+                result = num * num;
+                nums.push(result);
+                break;
+                case "(": ops.push(operation);
+            }
+            break;
+        }
+    }
+
+    // This method does the work of taking the numbers and operations in the stacks and doing the math
+    // Takes in Deques for parameters
+    public String calculate(Deque<String> ops, Deque<Integer> operands){
+        
+        // while the operations stack isn't empty
+        while(!ops.isEmpty()){
+
+            // Pop off the numbers and operation from their respective stacks
+            String operation = ops.pop();
+            
+            // Do the operation and push the result onto the number stack
+            int result = 0;
+            switch(operation){
+                case "+":
+                case "-":
+                case "•":
+                case "÷":
+                    int num1 = operands.pop();
+                    int num2 = operands.pop();
+                    result = doOperation(num1, num2, operation);
+                    operands.push(result);
+                break;
+                case "a\u00B2":
+                    int num = operands.pop();
+                    result = doOperation(num, num, operation);
+                    operands.push(result);
+                break;
+                case ")":
                 break;
             }
-            numStack.push(result);
         }
 
         // the remaining number will be the final result of the calculation
-        return numStack.pop() + "";
+        return operands.pop() + "";
+    }
+
+    // This method does the work of taking the numbers and operations in the stacks and doing the math
+    public String calculate(Stack<String> ops, Stack<Integer> operands){
+        
+        // while the operations stack isn't empty
+        while(!ops.empty()){
+
+            // Pop off the numbers and operation from their respective stacks
+            String operation = ops.pop();
+            
+            // Do the operation and push the result onto the number stack
+            int result = 0;
+            switch(operation){
+                case "+":
+                case "-":
+                case "•":
+                case "÷":
+                    int num1 = operands.pop();
+                    int num2 = operands.pop();
+                    result = doOperation(num1, num2, operation);
+                    operands.push(result);
+                break;
+                case "a\u00B2":
+                    int num = operands.pop();
+                    result = doOperation(num, num, operation);
+                    operands.push(result);
+                break;
+                case ")":
+                break;
+            }
+        }
+
+        // the remaining number will be the final result of the calculation
+        return operands.pop() + "";
     }
 }

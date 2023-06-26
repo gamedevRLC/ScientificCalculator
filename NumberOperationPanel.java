@@ -49,7 +49,7 @@ public class NumberOperationPanel extends JPanel{
 
         //Adds the remaining symbols 
         buttons.add(new CalculatorButton(".", "operation"));
-        buttons.add(new CalculatorButton("=", "operation"));
+        buttons.add(new CalculatorButton("=", "equals"));
         buttons.add(new CalculatorButton("+", "operation"));
 
         // Add all the buttons to the panel
