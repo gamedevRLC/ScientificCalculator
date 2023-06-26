@@ -21,6 +21,8 @@ public class CalculatorButton extends JButton {
             break;
             case "parenthesis": type = Button.PARENTHESIS;
             break;
+            case "clear": type = Button.CLEAR;
+            break;
         }
     }
 

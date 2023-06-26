@@ -28,9 +28,6 @@ public class CalculatorPanel extends JPanel implements ActionListener{
     // Stack for the numbers in parenthesis
     Stack<Integer> parNumStack;
 
-    // A stack for doing expressions within parenthesis
-    Stack<String> parenthesisStack;
-
     // The text of the textfield will need to be continuously added to overtime, so this StringBuilder will help with that
     StringBuilder stringBuilder;
 
@@ -59,7 +56,6 @@ public class CalculatorPanel extends JPanel implements ActionListener{
         miscPanel = new MiscPanel(this);
         numStack = new Stack<Integer>();
         opStack = new Stack<String>();
-        parenthesisStack = new Stack<String>();
 
         // Setting up the outputField
         outputField = new JTextField();
@@ -101,7 +97,7 @@ public class CalculatorPanel extends JPanel implements ActionListener{
         CalculatorButton button = (CalculatorButton) e.getSource();
 
         // If there's nothing in the operand string and the operation stack is empty
-        if(operand.isEmpty() && opStack.isEmpty() && parenthesisStack.isEmpty() && numStack.isEmpty()){
+        if(operand.isEmpty() && opStack.isEmpty() && numStack.isEmpty()){
             // Clear the string displayed in the text field
             stringBuilder.delete(0, stringBuilder.length());
         }
@@ -164,12 +160,14 @@ public class CalculatorPanel extends JPanel implements ActionListener{
         return result;
     }
 
-
     private void appendText(CalculatorButton button){
         // if the button is a number
         if (button.getType().equals(Button.NUMBER)) { 
             // append it to the string
             stringBuilder.append(button.getText());
+        } else if (button.getType().equals(Button.CLEAR)) { // if the clear button was pressed
+            //clear the string displayed
+            stringBuilder.delete(0, stringBuilder.length());
         } else { // else add the button's text to the textfield
         
             switch(button.getText()){
@@ -206,6 +204,12 @@ public class CalculatorPanel extends JPanel implements ActionListener{
                 }
                 doParenthesis();
             }
+        } else if (button.getType().equals(Button.CLEAR)) { // else if the clear button was pressed
+
+            // clear all the data structures
+            opStack.clear();
+            numStack.clear();
+            operand.delete(0, operand.length());
         }
     }
 
