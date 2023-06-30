@@ -8,13 +8,15 @@ import java.util.Deque;
 import java.util.LinkedList;
 // import java.awt.event.MouseEvent;
 // import java.awt.event.MouseMotionAdapter;
-import java.util.Stack;
 
 public class CalculatorPanel extends JPanel implements ActionListener{
 
     // This panels has access to the width and height of the window
     private int width;
     private int height;
+
+    // int for the position of the caret in the textfield
+    private int caretPosition;
 
     // The textfield for the output of the calculator when entering calculations and getting an answer
     JTextField outputField;
@@ -61,6 +63,8 @@ public class CalculatorPanel extends JPanel implements ActionListener{
         outputField.setBackground(Color.gray);
         outputField.setHorizontalAlignment(JTextField.TRAILING);
         outputField.setVisible(true);
+        outputField.setHighlighter(null);
+        caretPosition = outputField.getCaretPosition();
 
         // Setting up the panel
         this.setBounds(0, 0, width, height);
@@ -115,8 +119,10 @@ public class CalculatorPanel extends JPanel implements ActionListener{
         appendText(button);
         handleButtonTypes(button);
     
-        // Change the text to the string builder's new text
+        // Change the text to the string builder's new text and set the position of the caret
         outputField.setText(stringBuilder.toString());
+        outputField.setCaretPosition(caretPosition);
+        outputField.requestFocus();
     }
 
     // Return the precedence of an operation
@@ -158,6 +164,7 @@ public class CalculatorPanel extends JPanel implements ActionListener{
     }
 
     private void appendText(CalculatorButton button){
+
         // if the button is a number
         if (button.getType().equals(Button.NUMBER)) { 
             // append it to the string
@@ -179,6 +186,11 @@ public class CalculatorPanel extends JPanel implements ActionListener{
                 case "a\u00B2": stringBuilder.append("\u00B2");
                 break;
             }
+        }
+
+        // Reset the position of the caret to the end of the string if the button wasn't an arrow
+        if(!button.getType().equals(Button.ARROW)){
+            caretPosition = stringBuilder.toString().length();
         }
     }
 
@@ -207,6 +219,14 @@ public class CalculatorPanel extends JPanel implements ActionListener{
             opStack.clear();
             numStack.clear();
             operand.delete(0, operand.length());
+        } else if (button.getType().equals(Button.ARROW)) { // else if an arrow button is pressed
+            
+            // move the position of the caret accordingly
+            if(caretPosition >= 0 && button.getText().equals("\u2190")){
+                caretPosition -= 1;
+            } else if (caretPosition < stringBuilder.toString().length() && button.getText().equals("\u2192")) {
+                caretPosition += 1;
+            }
         }
     }
 
@@ -315,39 +335,4 @@ public class CalculatorPanel extends JPanel implements ActionListener{
         // the remaining number will be the final result of the calculation
         return operands.pop() + "";
     }
-
-    // // This method does the work of taking the numbers and operations in the stacks and doing the math
-    // public String calculate(Stack<String> ops, Stack<Integer> operands){
-        
-    //     // while the operations stack isn't empty
-    //     while(!ops.empty()){
-
-    //         // Pop off the numbers and operation from their respective stacks
-    //         String operation = ops.pop();
-            
-    //         // Do the operation and push the result onto the number stack
-    //         int result = 0;
-    //         switch(operation){
-    //             case "+":
-    //             case "-":
-    //             case "•":
-    //             case "÷":
-    //                 int num1 = operands.pop();
-    //                 int num2 = operands.pop();
-    //                 result = doOperation(num1, num2, operation);
-    //                 operands.push(result);
-    //             break;
-    //             case "a\u00B2":
-    //                 int num = operands.pop();
-    //                 result = doOperation(num, num, operation);
-    //                 operands.push(result);
-    //             break;
-    //             case ")":
-    //             break;
-    //         }
-    //     }
-
-    //     // the remaining number will be the final result of the calculation
-    //     return operands.pop() + "";
-    // }
 }

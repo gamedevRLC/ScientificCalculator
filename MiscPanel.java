@@ -31,8 +31,8 @@ public class MiscPanel extends JPanel{
         //Adds the remaining symbols 
         buttons.add(new CalculatorButton("(", "parenthesis"));
         buttons.add(new CalculatorButton(")", "parenthesis"));
-        buttons.add(new CalculatorButton("\u2190", "operation"));
-        buttons.add(new CalculatorButton("\u2192", "operation"));
+        buttons.add(new CalculatorButton("\u2190", "arrow"));
+        buttons.add(new CalculatorButton("\u2192", "arrow"));
         buttons.add(new CalculatorButton("\u2421", "operation"));
         buttons.add(new CalculatorButton("clear", "clear"));
         

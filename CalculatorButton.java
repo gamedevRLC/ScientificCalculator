@@ -23,6 +23,8 @@ public class CalculatorButton extends JButton {
             break;
             case "clear": type = Button.CLEAR;
             break;
+            case "arrow": type = Button.ARROW;
+            break;
         }
     }
 
