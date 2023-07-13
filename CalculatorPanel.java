@@ -178,7 +178,7 @@ public class CalculatorPanel extends JPanel implements ActionListener{
             //clear the string displayed
             stringBuilder.delete(0, stringBuilder.length());
         } else if (button.getType().equals(Button.DELETE)) {
-            stringBuilder.deleteCharAt(stringBuilder.length());
+            stringBuilder.deleteCharAt(stringBuilder.length() - 1);
         } else { // else add the button's text to the textfield
         
             switch(button.getText()){
