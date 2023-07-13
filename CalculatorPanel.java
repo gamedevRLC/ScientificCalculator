@@ -8,6 +8,7 @@ import java.util.Deque;
 import java.util.LinkedList;
 // import java.awt.event.MouseEvent;
 // import java.awt.event.MouseMotionAdapter;
+import java.util.NoSuchElementException;
 
 public class CalculatorPanel extends JPanel implements ActionListener{
 
@@ -178,7 +179,11 @@ public class CalculatorPanel extends JPanel implements ActionListener{
             //clear the string displayed
             stringBuilder.delete(0, stringBuilder.length());
         } else if (button.getType().equals(Button.DELETE)) {
-            stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+            // if(caretPosition == stringBuilder.toString().length()){
+                // stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+            // } else {
+                stringBuilder.deleteCharAt(caretPosition - 1);
+            // }
         } else { // else add the button's text to the textfield
         
             switch(button.getText()){
@@ -241,6 +246,7 @@ public class CalculatorPanel extends JPanel implements ActionListener{
             numStack.clear();
             operand.delete(0, operand.length());
             mainStack.clear();
+
         } else if (button.getType().equals(Button.ARROW)) { // else if an arrow button is pressed
             
             // move the position of the caret accordingly
@@ -250,12 +256,12 @@ public class CalculatorPanel extends JPanel implements ActionListener{
                 caretPosition += 1;
             }
         } else if (button.getType().equals(Button.DELETE)) {
-            String item = mainStack.removeLast();
             try {
+                String item = mainStack.removeLast();
                 Integer.parseInt(item);
-                operand.deleteCharAt(operand.length() - 1);
-            } catch (Exception e) {
-                // TODO: handle exception
+                operand.deleteCharAt(caretPosition - 1);
+                mainStack.addLast(operand.toString()+"");
+            } catch (NoSuchElementException e) {
             }
         }
     }
