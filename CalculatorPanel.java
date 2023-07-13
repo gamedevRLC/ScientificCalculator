@@ -27,6 +27,9 @@ public class CalculatorPanel extends JPanel implements ActionListener{
     // Stack for the numbers in the calculation
     Deque<Integer> numStack;
 
+    // The stack that keeps a record of the full expression as list of strings
+    Deque<String> mainStack;
+
     // The text of the textfield will need to be continuously added to overtime, so this StringBuilder will help with that
     StringBuilder stringBuilder;
 
@@ -55,6 +58,7 @@ public class CalculatorPanel extends JPanel implements ActionListener{
         miscPanel = new MiscPanel(this);
         numStack = new LinkedList<Integer>();
         opStack = new LinkedList<String>();
+        mainStack = new LinkedList<String>();
 
         // Setting up the outputField
         outputField = new JTextField();
@@ -112,11 +116,12 @@ public class CalculatorPanel extends JPanel implements ActionListener{
             }
             
             // clear the textfield and display the calculation
+            mainStack.clear();
             stringBuilder.delete(0, stringBuilder.length());
             stringBuilder.append(calculate(opStack, numStack));
         } 
         
-        appendText(button);
+        handleText(button);
         handleButtonTypes(button);
     
         // Change the text to the string builder's new text and set the position of the caret
@@ -163,7 +168,7 @@ public class CalculatorPanel extends JPanel implements ActionListener{
         return result;
     }
 
-    private void appendText(CalculatorButton button){
+    private void handleText(CalculatorButton button){
 
         // if the button is a number
         if (button.getType().equals(Button.NUMBER)) { 
@@ -172,18 +177,26 @@ public class CalculatorPanel extends JPanel implements ActionListener{
         } else if (button.getType().equals(Button.CLEAR)) { // if the clear button was pressed
             //clear the string displayed
             stringBuilder.delete(0, stringBuilder.length());
+        } else if (button.getType().equals(Button.DELETE)) {
+            stringBuilder.deleteCharAt(stringBuilder.length());
         } else { // else add the button's text to the textfield
         
             switch(button.getText()){
                 case "+":
                 case "-":
                 case "•":
-                case "÷": stringBuilder.append(button.getText());
+                case "÷": 
+                    stringBuilder.append(button.getText());
+                    mainStack.add(button.getText());
                 break;
                 case "(": 
-                case ")": stringBuilder.append(button.getText());
+                case ")": 
+                    stringBuilder.append(button.getText());
+                    mainStack.add(button.getText());
                 break;
-                case "a\u00B2": stringBuilder.append("\u00B2");
+                case "a\u00B2": 
+                    stringBuilder.append("\u00B2");
+                    mainStack.add(button.getText());
                 break;
             }
         }
@@ -199,6 +212,14 @@ public class CalculatorPanel extends JPanel implements ActionListener{
         if (button.getType().equals(Button.NUMBER)) { 
             // add it to the number stack
             operand.append(button.getText());
+            try {
+                int num = Integer.parseInt(mainStack.getLast());
+                mainStack.removeLast();
+                mainStack.addLast(operand.toString()+"");
+            } catch (Exception e) {
+                // TODO: handle exception
+                mainStack.add(operand.toString());
+            }
         } else if (button.getType().equals(Button.OPERATION)) { // else if a symbol button besides = was pressed
             operationButtons(button);
         } else if (button.getType().equals(Button.PARENTHESIS)) { // else if a parenthesis is pressed
@@ -219,6 +240,7 @@ public class CalculatorPanel extends JPanel implements ActionListener{
             opStack.clear();
             numStack.clear();
             operand.delete(0, operand.length());
+            mainStack.clear();
         } else if (button.getType().equals(Button.ARROW)) { // else if an arrow button is pressed
             
             // move the position of the caret accordingly
@@ -227,6 +249,8 @@ public class CalculatorPanel extends JPanel implements ActionListener{
             } else if (caretPosition < stringBuilder.toString().length() && button.getText().equals("\u2192")) {
                 caretPosition += 1;
             }
+        } else if (button.getType().equals(Button.DELETE)) {
+            
         }
     }
 
@@ -290,11 +314,12 @@ public class CalculatorPanel extends JPanel implements ActionListener{
                     nums.push(result);
                 break;
                 case "a\u00B2":
-                int num = nums.pop();
-                result = num * num;
-                nums.push(result);
+                    int num = nums.pop();
+                    result = num * num;
+                    nums.push(result);
                 break;
-                case "(": ops.push(operation);
+                case "(": 
+                    ops.push(operation);
             }
             break;
         }

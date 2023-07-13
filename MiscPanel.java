@@ -33,7 +33,7 @@ public class MiscPanel extends JPanel{
         buttons.add(new CalculatorButton(")", "parenthesis"));
         buttons.add(new CalculatorButton("\u2190", "arrow"));
         buttons.add(new CalculatorButton("\u2192", "arrow"));
-        buttons.add(new CalculatorButton("\u2421", "operation"));
+        buttons.add(new CalculatorButton("\u2421", "delete"));
         buttons.add(new CalculatorButton("clear", "clear"));
         
         // Add all the buttons to the panel
