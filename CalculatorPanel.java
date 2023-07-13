@@ -213,7 +213,7 @@ public class CalculatorPanel extends JPanel implements ActionListener{
             // add it to the number stack
             operand.append(button.getText());
             try {
-                int num = Integer.parseInt(mainStack.getLast());
+                Integer.parseInt(mainStack.getLast());
                 mainStack.removeLast();
                 mainStack.addLast(operand.toString()+"");
             } catch (Exception e) {
@@ -250,7 +250,13 @@ public class CalculatorPanel extends JPanel implements ActionListener{
                 caretPosition += 1;
             }
         } else if (button.getType().equals(Button.DELETE)) {
-            
+            String item = mainStack.removeLast();
+            try {
+                Integer.parseInt(item);
+                operand.deleteCharAt(operand.length() - 1);
+            } catch (Exception e) {
+                // TODO: handle exception
+            }
         }
     }
 
