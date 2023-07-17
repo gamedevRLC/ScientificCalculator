@@ -179,11 +179,11 @@ public class CalculatorPanel extends JPanel implements ActionListener{
             //clear the string displayed
             stringBuilder.delete(0, stringBuilder.length());
         } else if (button.getType().equals(Button.DELETE)) {
-            // if(caretPosition == stringBuilder.toString().length()){
-                // stringBuilder.deleteCharAt(stringBuilder.length() - 1);
-            // } else {
+            if(stringBuilder.toString().length() == 1){
+                stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+            } else {
                 stringBuilder.deleteCharAt(caretPosition - 1);
-            // }
+            }
         } else { // else add the button's text to the textfield
         
             switch(button.getText()){
@@ -262,6 +262,10 @@ public class CalculatorPanel extends JPanel implements ActionListener{
                 operand.deleteCharAt(caretPosition - 1);
                 mainStack.addLast(operand.toString()+"");
             } catch (NoSuchElementException e) {
+                
+            } catch (StringIndexOutOfBoundsException e) {
+                operand.deleteCharAt(caretPosition);
+                mainStack.addLast(operand.toString()+"");
             }
         }
     }
